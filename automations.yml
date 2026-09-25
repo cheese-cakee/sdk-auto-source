@@ -1,5 +1,5 @@
 schemaVersion: 2
-mode: observe
+mode: dry-run
 capabilities:
   prDashboard:
     enabled: true
