@@ -1,5 +1,8 @@
-schemaVersion: 1
-mode: dry-run
+schemaVersion: 2
+mode: observe
 capabilities:
-  prQuality:
+  prDashboard:
     enabled: true
+    checks:
+      linkedIssues:
+        enabled: true
