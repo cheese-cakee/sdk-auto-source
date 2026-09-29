@@ -1,8 +1,12 @@
 schemaVersion: 2
-mode: observe
+mode: active
 capabilities:
-  prDashboard:
+  triageQueue:
     enabled: true
-    checks:
-      linkedIssues:
-        enabled: true
+    welcome: true
+    lockUntilTriaged: true
+    confirmUnlock: true
+mappings:
+  labels:
+    awaitingTriage: "status: triage"
+    ready: "status: ready for dev"
