@@ -5,4 +5,4 @@ capabilities:
     enabled: true
     checks:
       linkedIssues:
-      enabled: true
+        enabled: true
