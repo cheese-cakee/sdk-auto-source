@@ -1,8 +1,0 @@
-name: Rehearsal
-description: Temporary form for the triage rehearsal.
-labels: ["status: triage"]
-body:
-  - type: textarea
-    id: notes
-    attributes:
-      label: Notes
