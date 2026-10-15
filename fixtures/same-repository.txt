@@ -1,0 +1,1 @@
+Closing-reference fixture with an issue in the source repository.
