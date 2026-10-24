@@ -1,9 +1,8 @@
-mode: active
+schemaVersion: 2
+mode: observe
 capabilities:
   prDashboard:
     enabled: true
     checks:
       linkedIssues:
-        enabled: true
-      mergeConflicts:
         enabled: true
