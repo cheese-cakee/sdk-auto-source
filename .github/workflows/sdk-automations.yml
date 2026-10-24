@@ -1,0 +1,64 @@
+# Protocol 9.5's base workflow on cheese-cakee/sdk-auto-source. The engine is
+# checked out from cheese-cakee/sdk-automations at the commit under test, built
+# on the runner, and run as a local action. Nothing here ever checks out this
+# repository, so a fork's pull request runs no head code.
+#
+# Repository variables: SDK_AUTOMATIONS_REF, a FULL commit SHA (the first step
+# fails the job without one); ARM_WRITES, "true" only while 9.5 runs.
+#
+# pull_request_target only: an issue or schedule trigger would let the active
+# config act on the sandbox's other items.
+name: sdk-automations
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, closed]
+
+permissions:
+  contents: read
+  issues: write
+  pull-requests: write
+
+concurrency:
+  group: sdk-automations-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - name: require a full engine sha
+        env:
+          REF: ${{ vars.SDK_AUTOMATIONS_REF }}
+        run: |
+          [[ "$REF" =~ ^[0-9a-f]{40}$ ]] || { echo "SDK_AUTOMATIONS_REF is not a full sha"; exit 1; }
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: cheese-cakee/sdk-automations
+          ref: ${{ vars.SDK_AUTOMATIONS_REF }}
+          path: sdk-automations
+          persist-credentials: false
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413 # v6.1.0
+        with:
+          package_json_file: sdk-automations/package.json
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: sdk-automations/pnpm-lock.yaml
+      - name: record the commit under test
+        working-directory: sdk-automations
+        run: |
+          set -euo pipefail
+          echo "engine commit: $(git rev-parse HEAD)" | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: install and build the bundle
+        working-directory: sdk-automations
+        run: |
+          set -euo pipefail
+          pnpm install --frozen-lockfile
+          pnpm --filter @hiero-hackers/automation-runtime build:action
+          ls -l packages/runtime/dist/action.js
+      - name: run the action
+        uses: ./sdk-automations
+        with:
+          arm-writes: ${{ vars.ARM_WRITES || 'false' }}
