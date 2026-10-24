@@ -1,0 +1,1 @@
+Cross-repository closing-reference fixture with an installed target.
