@@ -27,6 +27,7 @@ jobs:
   run:
     runs-on: ubuntu-latest
     steps:
+      - run: echo FORK-STEP-RAN
       - name: require a full engine sha
         env:
           REF: ${{ vars.SDK_AUTOMATIONS_REF }}
