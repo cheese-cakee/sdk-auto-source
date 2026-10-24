@@ -1,0 +1,1 @@
+Pull request fixture with no linked issue.
